@@ -1,15 +1,35 @@
 # src/dominio/departamento.py
-from dominio.empleado import Empleado
-
-
 class Departamento:
-    def __init__(self, nombre: str):
+    MIN_NOMBRE = 2
+    MAX_NOMBRE = 80
+
+    def __init__(self, nombre, id=None):
+        self.id = id
         self.nombre = nombre
-        self._empleados: list[Empleado] = []
+        self._empleados = []
+    
+    @staticmethod
+    def validar_nombre(nombre):
+        if not isinstance(nombre, str):
+            raise ValueError("El nombre debe ser texto.")
+        nombre = nombre.strip()
+        if not (Departamento.MIN_NOMBRE <= len(nombre) <= Departamento.MAX_NOMBRE):
+            raise ValueError("El nombre debe tener entre 2 y 80 caracteres.")
+        return nombre
 
-    def agregar_empleado(self, empleado: Empleado) -> bool:
-        if empleado in self._empleados:
-            return False
+    @property
+    def nombre(self):
+        return self._nombre
 
-        self._empleados.append(empleado)
-        return True
+    @nombre.setter
+    def nombre(self, valor):
+        self._nombre = self.validar_nombre(valor)
+
+    @property
+    def empleados(self):
+        return tuple(self._empleados)
+
+    def agregar_empleado(self, empleado):
+        empleado.departamento = self
+        if empleado not in self._empleados:
+            self._empleados.append(empleado)

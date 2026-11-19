@@ -1,10 +1,12 @@
-# src/persistencia/conexion.py
 import os
 import sqlite3
 import pymysql
 from dotenv import load_dotenv
 
 load_dotenv()
+
+ERRORES_INTEGRIDAD = (sqlite3.IntegrityError, pymysql.err.IntegrityError)
+ERRORES_OPERACION = (sqlite3.OperationalError, pymysql.err.OperationalError)
 
 
 def obtener_motor():
@@ -19,7 +21,9 @@ def abrir_conexion():
     motor = obtener_motor()
 
     if motor == "sqlite":
-        return sqlite3.connect(os.getenv("DB_NAME", "ecotech.db"))
+        conexion = sqlite3.connect(os.getenv("DB_NAME", "ecotech.db"))
+        conexion.execute("PRAGMA foreign_keys = ON")  # SQLite no revisa las FK si no se activa
+        return conexion
     if motor == "mysql":
         return pymysql.connect(
             host=os.getenv("DB_HOST", "localhost"),

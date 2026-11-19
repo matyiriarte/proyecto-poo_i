@@ -1,4 +1,7 @@
 # src/dominio/empleado.py
+from dominio.departamento import Departamento
+
+
 class Empleado:
     MIN_NOMBRE = 2
     MAX_NOMBRE = 80
@@ -9,6 +12,7 @@ class Empleado:
         self.id = id
         self.nombre = nombre
         self.correo = correo
+        self.departamento = None
 
     @staticmethod
     def validar_nombre(nombre):
@@ -54,5 +58,15 @@ class Empleado:
     def correo(self, valor):
         self._correo = self.validar_correo(valor)
 
+    @property
+    def departamento(self):
+        return self._departamento
+
+    @departamento.setter
+    def departamento(self, valor):
+        if valor is not None and not isinstance(valor, Departamento):
+            raise ValueError("Asigna un Departamento o None.")
+        self._departamento = valor
+
     def mostrar_datos(self) -> str:
-        return f"{self.nombre} - {self.correo}"
+        return f"{self.nombre} - {self.correo}"     

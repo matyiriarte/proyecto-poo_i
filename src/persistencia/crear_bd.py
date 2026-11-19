@@ -7,23 +7,40 @@ def crear_tablas():
     cursor = conexion.cursor()
 
     if obtener_motor() == "sqlite":
-        sql = """
-        CREATE TABLE IF NOT EXISTS empleado (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT NOT NULL,
-            correo TEXT NOT NULL
-        )
+        sql_departamento = """
+            CREATE TABLE IF NOT EXISTS departamento (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT NOT NULL UNIQUE
+            )
+        """
+        sql_empleado = """
+            CREATE TABLE IF NOT EXISTS empleado (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT NOT NULL,
+                correo TEXT NOT NULL UNIQUE,
+                departamento_id INTEGER,
+                FOREIGN KEY (departamento_id) REFERENCES departamento(id)
+            )
         """
     else:
-        sql = """
-        CREATE TABLE IF NOT EXISTS empleado (
-            id INT PRIMARY KEY AUTO_INCREMENT,
-            nombre VARCHAR(100) NOT NULL,
-            correo VARCHAR(150) NOT NULL
-        )
+        sql_departamento = """
+            CREATE TABLE IF NOT EXISTS departamento (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                nombre VARCHAR(80) NOT NULL UNIQUE
+            )
+        """
+        sql_empleado = """
+            CREATE TABLE IF NOT EXISTS empleado (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                nombre VARCHAR(100) NOT NULL,
+                correo VARCHAR(150) NOT NULL UNIQUE,
+                departamento_id INT NULL,
+                FOREIGN KEY (departamento_id) REFERENCES departamento(id)
+            )
         """
 
-    cursor.execute(sql)
+    cursor.execute(sql_departamento)  # primero departamento: empleado lo referencia
+    cursor.execute(sql_empleado)
     conexion.commit()
     conexion.close()
 

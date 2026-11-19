@@ -1,4 +1,5 @@
 # src/persistencia/empleado_dao.py
+from dominio.departamento import Departamento
 from dominio.empleado import Empleado
 from persistencia.conexion import abrir_conexion, obtener_marcador
 
@@ -39,10 +40,13 @@ class EmpleadoDAO:
 
     @staticmethod
     def buscar_por_id(id_empleado):
-        sql = (
-            "SELECT id, nombre, correo "
-            f"FROM empleado WHERE id = {obtener_marcador()}"
-        )
+        # LEFT JOIN: trae el empleado aunque no tenga departamento
+        sql = f"""
+            SELECT e.id, e.nombre, e.correo, d.id, d.nombre
+            FROM empleado e
+            LEFT JOIN departamento d ON e.departamento_id = d.id
+            WHERE e.id = {obtener_marcador()}
+        """
         conexion = abrir_conexion()
         try:
             cursor = conexion.cursor()
@@ -53,5 +57,50 @@ class EmpleadoDAO:
 
         if fila is None:
             return None
-        id_empleado, nombre, correo = fila
-        return Empleado(nombre=nombre, correo=correo, id=id_empleado)
+        id_emp, nombre, correo, id_dep, nombre_dep = fila
+        empleado = Empleado(nombre=nombre, correo=correo, id=id_emp)
+        if id_dep is not None:
+            empleado.departamento = Departamento(nombre_dep, id=id_dep)
+        return empleado
+
+    @staticmethod
+    def actualizar(empleado):
+        marcador = obtener_marcador()
+        sql = f"""
+            UPDATE empleado SET nombre = {marcador}, correo = {marcador}
+            WHERE id = {marcador}
+        """
+        conexion = abrir_conexion()
+        try:
+            cursor = conexion.cursor()
+            cursor.execute(sql, (empleado.nombre, empleado.correo, empleado.id))
+            conexion.commit()
+            return cursor.rowcount  # cuántas filas cambiaron
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def eliminar(id_empleado):
+        sql = f"DELETE FROM empleado WHERE id = {obtener_marcador()}"
+        conexion = abrir_conexion()
+        try:
+            cursor = conexion.cursor()
+            cursor.execute(sql, (id_empleado,))
+            conexion.commit()
+            return cursor.rowcount
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def actualizar_departamento(empleado):
+        marcador = obtener_marcador()
+        sql = f"UPDATE empleado SET departamento_id = {marcador} WHERE id = {marcador}"
+        id_dep = empleado.departamento.id if empleado.departamento else None
+        conexion = abrir_conexion()
+        try:
+            cursor = conexion.cursor()
+            cursor.execute(sql, (id_dep, empleado.id))
+            conexion.commit()
+            return cursor.rowcount
+        finally:
+            conexion.close()
