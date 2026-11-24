@@ -30,6 +30,10 @@ class Departamento:
         return tuple(self._empleados)
 
     def agregar_empleado(self, empleado):
+        from dominio.empleado import Empleado  
+
+        if not isinstance(empleado, Empleado):
+            raise ValueError("Se esperaba un Empleado.")
         empleado.departamento = self
         if empleado not in self._empleados:
             self._empleados.append(empleado)

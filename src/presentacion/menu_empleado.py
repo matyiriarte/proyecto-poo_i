@@ -106,7 +106,12 @@ def eliminar_empleado():
     if confirmacion != "s":
         print("Eliminación cancelada.")
         return
-    filas = EmpleadoDAO.eliminar(empleado.id)
+    try:
+        filas = EmpleadoDAO.eliminar(empleado.id)
+    except ERRORES_INTEGRIDAD:
+        logger.exception("Restricción de BD al eliminar empleado.")
+        print("No se puede eliminar: el empleado tiene una cuenta de usuario.")
+        return
     if filas == 1:
         print("Empleado eliminado.")
     else:

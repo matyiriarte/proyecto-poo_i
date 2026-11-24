@@ -1,4 +1,3 @@
-# src/persistencia/crear_bd.py
 from persistencia.conexion import abrir_conexion, obtener_motor
 
 
@@ -22,6 +21,15 @@ def crear_tablas():
                 FOREIGN KEY (departamento_id) REFERENCES departamento(id)
             )
         """
+        sql_usuario = """
+            CREATE TABLE IF NOT EXISTS usuario (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                empleado_id INTEGER NOT NULL UNIQUE,
+                nombre_usuario TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL,
+                FOREIGN KEY (empleado_id) REFERENCES empleado(id)
+            )
+        """
     else:
         sql_departamento = """
             CREATE TABLE IF NOT EXISTS departamento (
@@ -38,9 +46,19 @@ def crear_tablas():
                 FOREIGN KEY (departamento_id) REFERENCES departamento(id)
             )
         """
+        sql_usuario = """
+            CREATE TABLE IF NOT EXISTS usuario (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                empleado_id INT NOT NULL UNIQUE,
+                nombre_usuario VARCHAR(40) NOT NULL UNIQUE,
+                password_hash VARCHAR(100) NOT NULL,
+                FOREIGN KEY (empleado_id) REFERENCES empleado(id)
+            )
+        """
 
-    cursor.execute(sql_departamento)  # primero departamento: empleado lo referencia
+    cursor.execute(sql_departamento)
     cursor.execute(sql_empleado)
+    cursor.execute(sql_usuario)
     conexion.commit()
     conexion.close()
 

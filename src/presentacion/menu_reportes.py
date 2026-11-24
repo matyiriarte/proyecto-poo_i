@@ -1,6 +1,13 @@
+from dominio.reporte import ReporteEmpleados, ReportePorDepartamento
 from persistencia.departamento_dao import DepartamentoDAO
 from persistencia.empleado_dao import EmpleadoDAO
 from presentacion.menu_empleado import solicitar_id
+
+
+def imprimir_reportes(reportes):
+    for reporte in reportes:
+        print()
+        print(reporte.generar())
 
 
 def reporte_departamentos():
@@ -8,13 +15,19 @@ def reporte_departamentos():
     if not departamentos:
         print("Todavía no hay departamentos registrados.")
         return
+    reportes = []
     for dep in departamentos:
         departamento = DepartamentoDAO.buscar_con_empleados(dep.id)
-        print(f"\n{departamento.nombre}")
-        if not departamento.empleados:
-            print("  (sin empleados)")
-        for empleado in departamento.empleados:
-            print(f"  {empleado.id}: {empleado.nombre} - {empleado.correo}")
+        reportes.append(ReportePorDepartamento(departamento))
+    imprimir_reportes(reportes)
+
+
+def reporte_general():
+    reportes = [ReporteEmpleados(EmpleadoDAO.listar())]
+    for dep in DepartamentoDAO.listar():
+        departamento = DepartamentoDAO.buscar_con_empleados(dep.id)
+        reportes.append(ReportePorDepartamento(departamento))
+    imprimir_reportes(reportes)
 
 
 def reporte_empleado():
@@ -35,14 +48,17 @@ def reporte_empleado():
 def menu_reportes():
     while True:
         print("\n--- REPORTES ---")
-        print("1. Departamentos y sus empleados\n2. Información de un empleado\n0. Volver")
+        print("1. Departamentos y sus empleados\n2. Información de un empleado")
+        print("3. Reporte general (todos los reportes)\n0. Volver")
         opcion = input("Opción: ").strip()
 
         if opcion == "1":
             reporte_departamentos()
         elif opcion == "2":
             reporte_empleado()
+        elif opcion == "3":
+            reporte_general()
         elif opcion == "0":
             break
         else:
-            print("Elige 0, 1 o 2.")
+            print("Elige 0, 1, 2 o 3.")

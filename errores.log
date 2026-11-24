@@ -1,0 +1,8 @@
+ERROR:presentacion.menu_empleado:Restricción de BD al eliminar empleado.
+Traceback (most recent call last):
+  File "c:\Users\matia\OneDrive\Escritorio\proyecto_poo\proyecto-poo_i\src\presentacion\menu_empleado.py", line 110, in eliminar_empleado
+    filas = EmpleadoDAO.eliminar(empleado.id)
+  File "c:\Users\matia\OneDrive\Escritorio\proyecto_poo\proyecto-poo_i\src\persistencia\empleado_dao.py", line 88, in eliminar
+    cursor.execute(sql, (id_empleado,))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: FOREIGN KEY constraint failed
