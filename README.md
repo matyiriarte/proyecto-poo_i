@@ -1,10 +1,5 @@
 # EcoTech · Gestión de empleados en consola
 
-Aplicación de consola en Python para administrar los empleados y departamentos de **EcoTech**, una empresa ficticia. Proyecto de la asignatura **Programación Orientada a Objeto Seguro (TI3V21)** de INACAP, desarrollado desde el modelo UML hasta un sistema con persistencia en base de datos e inicio de sesión seguro.
-
-**Autor:** Matias Iriarte Ramos · Analista Programador, INACAP La Serena
-**Avance:** Unidad 2 completa y Clase 6 (usuario y autenticación)
-
 ---
 
 ## Funcionalidades
