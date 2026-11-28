@@ -27,14 +27,14 @@ def solicitar_login():
         return None
 
     try:
-        empleado = EmpleadoDAO.buscar_por_id(usuario["empleado_id"])
+        empleado = EmpleadoDAO.buscar_por_id(usuario.empleado_id)
     except ERRORES_OPERACION:
         logger.exception("Fallo de BD al recuperar el empleado de la cuenta.")
         empleado = None
     if empleado is None:
         print("No se pudo recuperar el empleado de la cuenta.")
         return None
-    print(f"Sesión iniciada: {usuario['nombre_usuario']} · {empleado.nombre} ({empleado.correo})")
+    print(f"Sesión iniciada: {usuario.nombre_usuario} · {empleado.nombre} ({empleado.correo})")
     return usuario
 
 
@@ -82,8 +82,11 @@ def crear_cuenta():
         print(f"Cuenta creada. ID: {usuario.id}")
 
 
+MAX_INTENTOS = 3
+
+
 def menu_inicio():
-    """Devuelve el usuario autenticado, o None si la persona sale."""
+    intentos = 0
     while True:
         print("\n=== ECOTECH · ACCESO ===")
         print("1. Iniciar sesión\n2. Crear cuenta\n0. Salir")
@@ -93,6 +96,11 @@ def menu_inicio():
             usuario = solicitar_login()
             if usuario is not None:
                 return usuario
+            intentos += 1
+            if intentos >= MAX_INTENTOS:
+                print("Demasiados intentos fallidos. Vuelve a ejecutar el programa.")
+                return None
+            print(f"Intentos restantes: {MAX_INTENTOS - intentos}")
         elif opcion == "2":
             crear_cuenta()
         elif opcion == "0":
